@@ -1,0 +1,44 @@
+{
+  "name": "insight-media/statamic-opening-hours",
+  "description": "An addon for Statamic to display opening hours",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Insight media",
+      "email": "dries@insight-media.be",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.0",
+    "spatie/opening-hours": "^2.13.0",
+    "statamic/cms": "^3.3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "InsightMedia\\StatamicOpeningHours\\": "src"
+    }
+  },
+  "scripts": {
+    "phpunit": "phpunit"
+  },
+  "extra": {
+    "statamic": {
+      "name": "Opening hours",
+      "description": "An addon for Statamic to display opening hours."
+    },
+    "laravel": {
+      "providers": [
+        "InsightMedia\\StatamicOpeningHours\\ServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "pixelfear/composer-dist-plugin": true
+    }
+  }
+}
