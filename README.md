@@ -27,6 +27,11 @@ You can search for this addon in the `Tools > Addons` section of the Statamic co
 composer require insight-media/statamic-opening-hours
 ```
 
+Publish the optional config file.
+``` bash
+php artisan vendor:publish --tag=statamic-google-opening-hours-config --force
+```
+
 ## How to Use
 
 ### In the Statamic Control Panel
