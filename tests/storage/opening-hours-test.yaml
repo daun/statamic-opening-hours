@@ -1,0 +1,52 @@
+default:
+  default_hours_title: null
+  monday: {  }
+  tuesday:
+    -
+      id: lbxnryyk
+      from: '10:00'
+      to: '12:00'
+    -
+      id: lbxnsuv4
+      from: '13:00'
+      to: '18:00'
+  wednesday:
+    -
+      id: lbxns5df
+      from: '10:00'
+      to: '12:00'
+  thursday:
+    -
+      id: lbxnt195
+      from: '10:00'
+      to: '12:00'
+    -
+      id: lbxnt3x1
+      from: '13:00'
+      to: '18:00'
+  friday:
+    -
+      id: lbxnt82h
+      from: '10:00'
+      to: '12:00'
+    -
+      id: lbxnta7g
+      from: '13:00'
+      to: '18:00'
+  saturday:
+    -
+      id: lbxntgd3
+      from: '10:00'
+      to: '18:00'
+  sunday: {  }
+  exceptions_title: null
+  exceptions:
+    -
+      id: lbxmheoe
+      date: '2022-12-23'
+      reason: 'We are closed'
+    -
+      id: lbxntwlv
+      date: '2022-12-24'
+      from: '10:00'
+      to: '12:00'

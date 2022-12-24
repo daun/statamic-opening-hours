@@ -35,7 +35,7 @@ class OpeningHoursController
 
     public function getData()
     {
-        return OpeningHoursStorage::getYaml('settings', Site::selected());
+        return OpeningHoursStorage::getYaml(Site::selected());
     }
 
     public function getBlueprint()
@@ -45,7 +45,7 @@ class OpeningHoursController
 
     public function putData($data)
     {
-        return OpeningHoursStorage::putYaml('settings', Site::selected(), $data);
+        return OpeningHoursStorage::putYaml(Site::selected(), $data);
     }
 
 }

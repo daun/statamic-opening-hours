@@ -1,7 +1,16 @@
 {
   "name": "insight-media/statamic-opening-hours",
   "description": "An addon for Statamic to display opening hours",
-  "license": "MIT",
+  "type": "statamic-addon",
+  "homepage": "https://github.com/insight-media/statamic-opening-hours",
+  "keywords": [
+    "Statamic",
+    "Opening hours",
+    "Opening times",
+    "Closing times",
+    "Addon",
+    "Insight Media"
+  ],
   "authors": [
     {
       "name": "Insight media",
@@ -17,6 +26,11 @@
   "autoload": {
     "psr-4": {
       "InsightMedia\\StatamicOpeningHours\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "InsightMedia\\StatamicOpeningHours\\Tests\\": "tests"
     }
   },
   "scripts": {
@@ -40,5 +54,9 @@
     "allow-plugins": {
       "pixelfear/composer-dist-plugin": true
     }
+  },
+  "require-dev": {
+    "orchestra/testbench": "^7.16",
+    "phpunit/phpunit": "^9.5"
   }
 }

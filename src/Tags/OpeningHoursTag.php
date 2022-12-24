@@ -4,8 +4,8 @@ namespace InsightMedia\StatamicOpeningHours\Tags;
 
 use DateTime;
 use InsightMedia\StatamicOpeningHours\Facades\OpeningHoursStorage;
+use InsightMedia\StatamicOpeningHours\Parser;
 use Spatie\OpeningHours\OpeningHours;
-use Spatie\OpeningHours\OpeningHoursForDay;
 use Statamic\Tags\Tags;
 use Statamic\Facades\Site;
 
@@ -20,54 +20,44 @@ class OpeningHoursTag extends Tags
 
     protected ?array $data = null;
 
-    private array $weekDayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-    public function isOpenNow(): bool
+    public function isOpen(): bool
     {
 
-        return $this->openingHours()->isOpenAt(new DateTime());
+        if ($this->params->get('at')) {
+            // {{ openingHours:isOpen at="2022-12-31 15:00:00" }}
+            return $this->openingHours()->isOpenAt(new DateTime($this->params->get('at')));
+        } elseif ($this->params->get('on')) {
+            // {{ openingHours:isOpen on="2022-12-31" }}
+            // {{ openingHours:isOpen on="monday" }}
+            return $this->openingHours()->isOpenOn($this->params->get('on'));
+        } else {
+            // {{ openingHours:isOpen }}
+            return $this->openingHours()->isOpen();
+        }
 
     }
 
-    public function isClosedNow(): bool
+    public function isClosed(): bool
     {
 
-        return $this->openingHours()->isClosedAt(new DateTime());
-
-    }
-
-    public function isOpenOn(): bool
-    {
-
-        return $this->openingHours()->isOpenOn($this->params->get('day'));
-
-    }
-
-    public function isOpenAt(): bool
-    {
-
-        return $this->openingHours()->isOpenAt(new DateTime($this->params->get('date')));
-
-    }
-
-    public function isClosedOn(): bool
-    {
-
-        return $this->openingHours()->isClosedOn($this->params->get('day'));
-
-    }
-
-    public function isClosedAt(): bool
-    {
-
-        return $this->openingHours()->isClosedAt(new DateTime($this->params->get('date')));
+        if ($this->params->get('at')) {
+            // {{ openingHours:isClosed at="2022-12-31 15:00:00" }}
+            return $this->openingHours()->isClosedAt(new DateTime($this->params->get('at')));
+        } elseif ($this->params->get('on')) {
+            // {{ openingHours:isClosed on="2022-12-31" }}
+            // {{ openingHours:isClosed on="monday" }}
+            return $this->openingHours()->isClosedOn($this->params->get('on'));
+        } else {
+            // {{ openingHours:isClosed }}
+            return $this->openingHours()->isClosed();
+        }
 
     }
 
     public function forDay(): array
     {
 
-        return $this->openingHours()->forDay($this->params->get('day'))->map(function($item) {
+        return $this->openingHours()->forDay($this->params->get('day'))->map(function ($item) {
             return [
                 "from" => $item->start()->format($this->params->get('format')),
                 "to" => $item->end()->format($this->params->get('format'))
@@ -85,7 +75,7 @@ class OpeningHoursTag extends Tags
             if (!$openingHours->isEmpty()) {
                 $item = [
                     "day" => $day,
-                    "hours" => $openingHours->map(function($item) {
+                    "hours" => $openingHours->map(function ($item) {
                         return [
                             "from" => $item->start()->format($this->params->get('format')),
                             "to" => $item->end()->format($this->params->get('format'))
@@ -103,7 +93,7 @@ class OpeningHoursTag extends Tags
     public function forDate(): array
     {
 
-        return $this->openingHours()->forDate(new DateTime($this->params->get('date')))->map(function($item) {
+        return $this->openingHours()->forDate(new DateTime($this->params->get('date')))->map(function ($item) {
             return [
                 "from" => $item->start()->format($this->params->get('format')),
                 "to" => $item->end()->format($this->params->get('format'))
@@ -133,67 +123,91 @@ class OpeningHoursTag extends Tags
 
     }
 
+    public function exceptions(): array
+    {
+
+        $exceptions = [];
+
+        foreach ($this->openingHours()->exceptions() as $day => $openingHours) {
+            $item["day"] = $day;
+            $item["reason"] = $openingHours->getData();
+
+            if (!$openingHours->isEmpty()) {
+                $item["hours"] = $openingHours->map(function ($item) {
+                    return [
+                        "from" => $item->start()->format($this->params->get('format')),
+                        "to" => $item->end()->format($this->params->get('format'))
+                    ];
+                });
+            }
+            else {
+                $item["hours"] = [];
+            }
+
+            $exceptions[] = $item;
+        }
+
+        return $exceptions;
+
+    }
+
+    public function diffInOpenHours(): float
+    {
+
+        return $this->openingHours()->diffInOpenHours(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+
+    }
+
+    public function diffInOpenMinutes(): float
+    {
+
+        return $this->openingHours()->diffInOpenMinutes(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+
+    }
+
+    public function diffInOpenSeconds(): float
+    {
+
+        return $this->openingHours()->diffInOpenSeconds(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+
+    }
+
+    public function diffInClosedHours(): float
+    {
+
+        return $this->openingHours()->diffInClosedHours(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+
+    }
+
+    public function diffInClosedMinutes(): float
+    {
+
+        return $this->openingHours()->diffInClosedMinutes(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+
+    }
+
+    public function diffInClosedSeconds(): float
+    {
+
+        return $this->openingHours()->diffInClosedSeconds(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+
+    }
+
     protected function getData(): array
     {
 
-        return OpeningHoursStorage::getYaml('settings', Site::selected());
+        return OpeningHoursStorage::getYaml(Site::selected());
 
     }
 
     protected function openingHours(): OpeningHours
     {
 
-        if ($this->data) {
-            $data = $this->data;
-        }
-        else {
-            $data = $this->filter($this->getData());
-
-            foreach ($this->weekDayNames as $weekDayName) {
-                $data[$weekDayName] = $this->mapWeekday($data[$weekDayName]);
-            }
-
-            $data['exceptions'] = $this->mapExceptions($data['exceptions']);
-
-            $this->data = $data;
+        if (!$this->data) {
+            $this->data = (new Parser)->parse($this->getData());
         }
 
-        return OpeningHours::create($data);
-
-    }
-
-    protected function filter(array $data): array
-    {
-
-        $allowedKeys = array_merge($this->weekDayNames, ['exceptions']);
-
-        return array_filter(
-            $data,
-            function ($key) use ($allowedKeys) {
-                return in_array($key, $allowedKeys);
-            },
-            ARRAY_FILTER_USE_KEY
-        );
-
-    }
-
-    protected function mapWeekday(array $weekDay): array
-    {
-
-        return array_map(fn($day): string => sprintf("%s-%s", $day['from'], $day['to']), $weekDay);
-
-    }
-
-    protected function mapExceptions(array $exceptions): array
-    {
-
-        $data = [];
-
-        foreach ($exceptions as $exception) {
-            $data[$exception['date']] = [];
-        }
-
-        return $data;
+        return OpeningHours::create($this->data);
 
     }
 

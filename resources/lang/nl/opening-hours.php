@@ -28,8 +28,12 @@ return [
     'add-hours' => 'Tijden toevoegen',
     'exceptions' => [
         'display' => 'Uitzonderingen',
-        'instructions' => 'Uitzonderlijke sluitingstijden instellen.',
-        'add' => 'Uitzondering toevoegen',
+        'instructions' => 'Uitzonderlijke sluitingsdagen instellen.<br>Per sluitingsdag is het mogelijk om optionele uitzonderlijke openingstijden in te stellen.',
+        'reason' => 'Reden van sluiting',
+        'set_title' => 'Uitzondering',
+        'closing_date' => 'Sluitingsdatum',
+        'exceptional_hours' => 'Uitzonderlijke uren',
+        'exceptional_hours_display' => 'Geopend tijdens deze uitzonderlijke uren.',
     ],
 
 ];

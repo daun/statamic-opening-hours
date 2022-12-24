@@ -2,7 +2,7 @@
 
 namespace InsightMedia\StatamicOpeningHours\Storage;
 
-use Illuminate\Support\Collection;
+use Statamic\Facades\Config;
 use Statamic\Sites\Site as SiteObject;
 use Statamic\Facades\File;
 use Statamic\Facades\Site;
@@ -10,19 +10,13 @@ use Statamic\Facades\YAML;
 
 class Storage
 {
-    const prefix = 'opening-hours';
-
     /**
      * Retrieve YAML data from storage
      */
-    public static function getYaml(string $handle, SiteObject $site, bool $returnCollection = false): array
+    public static function getYaml(SiteObject $site, bool $returnCollection = false): array
     {
-        $path = storage_path(implode('/', [
-            'statamic/addons/opening-hours',
-            self::prefix . '_' . "{$handle}.yaml",
-        ]));
 
-        $data = YAML::parse(File::get($path));
+        $data = YAML::parse(File::get(Config::get('statamic-opening-hours.storage.file')));
 
         $site_data = collect($data)->get($site->handle());
 
@@ -36,19 +30,17 @@ class Storage
     /**
      * Put YAML data into storage
      */
-    public static function putYaml(string $handle, SiteObject $site, array $data): void
+    public static function putYaml(SiteObject $site, array $data): void
     {
-        $path = storage_path(implode('/', [
-            'statamic/addons/opening-hours',
-            self::prefix . '_' . "{$handle}.yaml",
-        ]));
 
-        $existing = collect(YAML::parse(File::get($path)));
+        $file = Config::get('statamic-opening-hours.storage.file');
+
+        $existing = collect(YAML::parse(File::get($file)));
 
         $combined_data = $existing->merge([
             "{$site->handle()}" => $data,
         ]);
 
-        File::put($path, YAML::dump($combined_data->toArray()));
+        File::put($file, YAML::dump($combined_data->toArray()));
     }
 }

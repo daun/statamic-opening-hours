@@ -26,6 +26,10 @@ class ServiceProvider extends AddonServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'statamic-opening-hours');
 
+        $this->publishes([
+            __DIR__ . '/../config/' => config_path(),
+        ], 'statamic-google-opening-hours-config');
+
         Nav::extend(function ($nav) {
             $nav->content(__('statamic-opening-hours::opening-hours.opening-hours'))
                 ->route('opening-hours.index')
