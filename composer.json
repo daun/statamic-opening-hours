@@ -1,5 +1,5 @@
 {
-  "name": "insight-media/statamic-opening-hours",
+  "name": "daun/statamic-opening-hours",
   "description": "A Statamic addon to manage and display opening hours",
   "type": "statamic-addon",
   "homepage": "https://github.com/insight-media/statamic-opening-hours",
@@ -21,7 +21,7 @@
   "require": {
     "php": "^8.0",
     "spatie/opening-hours": "^2.13.0",
-    "statamic/cms": "^3.3||^4.0"
+    "statamic/cms": "^3.3||^4.0||^5.0"
   },
   "autoload": {
     "psr-4": {
