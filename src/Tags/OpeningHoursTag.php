@@ -57,70 +57,58 @@ class OpeningHoursTag extends Tags
 
     public function forDay(): array
     {
+        $day = $this->params->get('day');
 
-        return $this->openingHours()->forDay($this->params->get('day'))->map(function ($item) {
-            return [
-                "from" => $item->start()->format($this->params->get('format')),
-                "to" => $item->end()->format($this->params->get('format'))
-            ];
-        });
-
+        return $this->openingHours()->forDay($day)
+            ->map(fn ($item) => [
+                "from" => $item->start()->toDateTime(Date::make($day)),
+                "to" => $item->end()->toDateTime(Date::make($day)),
+            ]);
     }
 
-    public function forWeek(): array
+    public function forWeek(): iterable
     {
-
-        $days = [];
-
-        foreach ($this->openingHours()->forWeek() as $day => $openingHours) {
-            if (!$openingHours->isEmpty()) {
-                $item = [
-                    "day" => $day,
-                    "hours" => $openingHours->map(function ($item) {
-                        return [
-                            "from" => $item->start()->format($this->params->get('format')),
-                            "to" => $item->end()->format($this->params->get('format'))
-                        ];
-                    })
-                ];
-                $days[] = $item;
-            }
-        }
-
-        return $days;
-
+        return collect($this->openingHours()->forWeek())
+            ->filter(fn ($hours) => !$hours->isEmpty())
+            ->map(fn ($hours, $day) => [
+                "day" => $date = Date::make($day),
+                "hours" => $hours->map(fn ($item) => [
+                    "from" => $item->start()->toDateTime($date),
+                    "to" => $item->end()->toDateTime($date),
+                ])
+            ])
+            ->values();
     }
 
     public function forDate(): array
     {
+        $date = $this->params->get('date');
 
-        return $this->openingHours()->forDate(new DateTime($this->params->get('date')))->map(function ($item) {
-            return [
-                "from" => $item->start()->format($this->params->get('format')),
-                "to" => $item->end()->format($this->params->get('format'))
-            ];
-        });
-
+        return $this->openingHours()->forDate(Date::make($date))
+            ->map(fn ($item) => [
+                "from" => $item->start()->toDateTime(Date::make($date)),
+                "to" => $item->end()->toDateTime(Date::make($date)),
+            ]);
     }
 
     public function nextOpen(): string
     {
 
-        return $this->openingHours()->nextOpen(new DateTime($this->params->get('date')))->format($this->params->get('format'));
+        return $this->format($this->openingHours()->nextOpen(Date::parse($this->params->get('date'))), $this->params->get('format'));
 
     }
 
     public function nextClose(): string
     {
 
-        return $this->openingHours()->nextClose(new DateTime($this->params->get('date')))->format($this->params->get('format'));
+        return $this->format($this->openingHours()->nextClose(Date::parse($this->params->get('date'))), $this->params->get('format'));
 
     }
 
     public function previousOpen(): string
     {
 
-        return $this->openingHours()->previousOpen(new DateTime($this->params->get('date')))->format($this->params->get('format'));
+        return $this->format($this->openingHours()->previousOpen(Date::parse($this->params->get('date'))), $this->params->get('format'));
 
     }
 
@@ -209,6 +197,12 @@ class OpeningHoursTag extends Tags
         }
 
         return OpeningHours::create($this->data);
+
+    }
+
+    protected function format(DateTimeInterface $date, string $format): string
+    {
+        return Date::make($date)->translatedFormat($format);
 
     }
 
