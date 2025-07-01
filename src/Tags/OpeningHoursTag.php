@@ -130,7 +130,7 @@ class OpeningHoursTag extends Tags
 
         foreach ($this->openingHours()->exceptions() as $day => $openingHours) {
             $item["day"] = $day;
-            $item["reason"] = $openingHours->getData();
+            $item["reason"] = $openingHours->data;
 
             if (!$openingHours->isEmpty()) {
                 $item["hours"] = $openingHours->map(function ($item) {
