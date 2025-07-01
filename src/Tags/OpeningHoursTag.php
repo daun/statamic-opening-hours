@@ -80,6 +80,24 @@ class OpeningHoursTag extends Tags
             ->values();
     }
 
+    public function forWeekCombined(): iterable
+    {
+        return collect($this->openingHours()->forWeekCombined())
+            ->filter(fn ($group) => !$group['opening_hours']->isEmpty())
+            ->map(fn ($group) => [
+                "day" => count($group['days']) === 1 ? Date::make(collect($group['days'])->first()) : null,
+                "days" => count($group['days']) > 1 ? [
+                    "first" => Date::make(collect($group['days'])->first()),
+                    "last" => Date::make(collect($group['days'])->last()),
+                ] : null,
+                "hours" => $group['opening_hours']->map(fn ($item) => [
+                    "from" => $item->start()->toDateTime(Date::now()),
+                    "to" => $item->end()->toDateTime(Date::now()),
+                ])
+            ])
+            ->values();
+    }
+
     public function forDate(): array
     {
         $date = $this->params->get('date');
