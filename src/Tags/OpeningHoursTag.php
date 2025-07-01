@@ -2,7 +2,8 @@
 
 namespace InsightMedia\StatamicOpeningHours\Tags;
 
-use DateTime;
+use DateTimeInterface;
+use Illuminate\Support\Facades\Date;
 use InsightMedia\StatamicOpeningHours\Facades\OpeningHoursStorage;
 use InsightMedia\StatamicOpeningHours\Parser;
 use Spatie\OpeningHours\OpeningHours;
@@ -23,16 +24,16 @@ class OpeningHoursTag extends Tags
     public function isOpen(): bool
     {
 
-        if ($this->params->get('at')) {
+        if ($at = $this->params->get('at')) {
             // {{ openingHours:isOpen at="2022-12-31 15:00:00" }}
-            return $this->openingHours()->isOpenAt(new DateTime($this->params->get('at')));
-        } elseif ($this->params->get('on')) {
+            return $this->openingHours()->isOpenAt(Date::parse($at));
+        } elseif ($on = $this->params->get('on')) {
             // {{ openingHours:isOpen on="2022-12-31" }}
             // {{ openingHours:isOpen on="monday" }}
-            return $this->openingHours()->isOpenOn($this->params->get('on'));
+            return $this->openingHours()->isOpenOn(Date::parse($on));
         } else {
             // {{ openingHours:isOpen }}
-            return $this->openingHours()->isOpen();
+            return $this->openingHours()->isOpenAt(Date::now());
         }
 
     }
@@ -40,16 +41,16 @@ class OpeningHoursTag extends Tags
     public function isClosed(): bool
     {
 
-        if ($this->params->get('at')) {
+        if ($at = $this->params->get('at')) {
             // {{ openingHours:isClosed at="2022-12-31 15:00:00" }}
-            return $this->openingHours()->isClosedAt(new DateTime($this->params->get('at')));
-        } elseif ($this->params->get('on')) {
+            return $this->openingHours()->isClosedAt(Date::parse($at));
+        } elseif ($on = $this->params->get('on')) {
             // {{ openingHours:isClosed on="2022-12-31" }}
             // {{ openingHours:isClosed on="monday" }}
-            return $this->openingHours()->isClosedOn($this->params->get('on'));
+            return $this->openingHours()->isClosedOn(Date::parse($on));
         } else {
             // {{ openingHours:isClosed }}
-            return $this->openingHours()->isClosed();
+            return $this->openingHours()->isClosedAt(Date::now());
         }
 
     }
@@ -154,42 +155,42 @@ class OpeningHoursTag extends Tags
     public function diffInOpenHours(): float
     {
 
-        return $this->openingHours()->diffInOpenHours(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+        return $this->openingHours()->diffInOpenHours(Date::parse($this->params->get('from')), Date::parse($this->params->get('to')));
 
     }
 
     public function diffInOpenMinutes(): float
     {
 
-        return $this->openingHours()->diffInOpenMinutes(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+        return $this->openingHours()->diffInOpenMinutes(Date::parse($this->params->get('from')), Date::parse($this->params->get('to')));
 
     }
 
     public function diffInOpenSeconds(): float
     {
 
-        return $this->openingHours()->diffInOpenSeconds(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+        return $this->openingHours()->diffInOpenSeconds(Date::parse($this->params->get('from')), Date::parse($this->params->get('to')));
 
     }
 
     public function diffInClosedHours(): float
     {
 
-        return $this->openingHours()->diffInClosedHours(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+        return $this->openingHours()->diffInClosedHours(Date::parse($this->params->get('from')), Date::parse($this->params->get('to')));
 
     }
 
     public function diffInClosedMinutes(): float
     {
 
-        return $this->openingHours()->diffInClosedMinutes(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+        return $this->openingHours()->diffInClosedMinutes(Date::parse($this->params->get('from')), Date::parse($this->params->get('to')));
 
     }
 
     public function diffInClosedSeconds(): float
     {
 
-        return $this->openingHours()->diffInClosedSeconds(new DateTime($this->params->get('from')), new DateTime($this->params->get('to')));
+        return $this->openingHours()->diffInClosedSeconds(Date::parse($this->params->get('from')), Date::parse($this->params->get('to')));
 
     }
 
