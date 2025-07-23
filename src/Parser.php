@@ -48,6 +48,10 @@ class Parser
         $data = [];
 
         foreach ($exceptions as $exception) {
+            if (($exception['enabled'] ?? true) === false) {
+                continue;
+            }
+
             $data[$exception['date']]['data'] = key_exists('reason', $exception) ? $exception['reason'] : null;
 
             if (key_exists('hours', $exception) && $exception['hours']) {
