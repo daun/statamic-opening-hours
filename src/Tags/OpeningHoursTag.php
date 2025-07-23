@@ -136,14 +136,14 @@ class OpeningHoursTag extends Tags
         $exceptions = [];
 
         foreach ($this->openingHours()->exceptions() as $day => $openingHours) {
-            $item["day"] = $day;
+            $item["day"] = Date::make($day);
             $item["reason"] = $openingHours->data;
 
             if (!$openingHours->isEmpty()) {
                 $item["hours"] = $openingHours->map(function ($item) {
                     return [
-                        "from" => $item->start()->format($this->params->get('format')),
-                        "to" => $item->end()->format($this->params->get('format'))
+                        "from" => $item->start()->toDateTime(Date::now()),
+                        "to" => $item->end()->toDateTime(Date::now())
                     ];
                 });
             }
